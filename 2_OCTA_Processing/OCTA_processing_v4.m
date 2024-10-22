@@ -65,7 +65,7 @@ stretched_average = stretched_average - background; % Figure 2a
 sa_stretched_average = imadjust((stretched_average), stretchlim((stretched_average)),[]);
 
 % Upsample to 6X (304x304 to 1824x1824)
-sa_stretched_average_6X = imresize(sa_stretched_average,6);
+sa_stretched_average_6X = imresize(sa_stretched_average,6); %jg added nearest
 
 % Thresholding 
 sa_sa_6X_thresh = sa_stretched_average_6X;
@@ -126,35 +126,35 @@ cropped_thresholded = thresholded2; % added so that additional masks can be adde
 
 % actual cleaning code within the button while loops 
 while strcmpi(another1, 'YES')
-while strcmpi(finished, 'NO')
-h = imfreehand( gca ); setColor(h,'red');
-position = wait( h );
-finished = questdlg('Finished?', ...
-      'confirmation', ...
-      'YES', 'NO', 'UNDO', 'NO');
-  if strcmpi(finished, 'UNDO')
-      delete(h)
-      finished = 'NO';
-  elseif strcmpi(finished, 'YES')
-      BWW = createMask( h );
-      close(gcf);
-  elseif strcmpi(finished, 'NO')
-      position = wait( h );
-  end
-end
-cropped_thresholded = logical(cropped_thresholded.*(~BWW)); % Figure 2f
-
-another1 = questdlg('Would you like to add another mask?', ...
-      'confirmation', ...
-      'YES', 'NO', 'NO'); 
-  
-if strcmpi(another1, 'YES')
-figure; imagesc(imoverlay(sa_stretched_average_6X, cropped_thresholded,[0 1 1])); 
-colormap gray; axis image; axis on; hold on; truesize
-title('Remove Unwanted Pixels - Drag and circle unwanted pixels. Double click FAZ to finish.');
-xlim([300 1500]);ylim([300 1500]);
-  finished = 'NO';
-end
+    while strcmpi(finished, 'NO')
+        h = imfreehand( gca ); setColor(h,'red');
+        position = wait( h );
+        finished = questdlg('Finished?', ...
+              'confirmation', ...
+              'YES', 'NO', 'UNDO', 'NO');
+          if strcmpi(finished, 'UNDO')
+              delete(h)
+              finished = 'NO';
+          elseif strcmpi(finished, 'YES')
+              BWW = createMask( h );
+              close(gcf);
+          elseif strcmpi(finished, 'NO')
+              position = wait( h );
+          end
+    end
+    cropped_thresholded = logical(cropped_thresholded.*(~BWW)); % Figure 2f
+    
+    another1 = questdlg('Would you like to add another mask?', ...
+          'confirmation', ...
+          'YES', 'NO', 'NO'); 
+      
+    if strcmpi(another1, 'YES')
+        figure; imagesc(imoverlay(sa_stretched_average_6X, cropped_thresholded,[0 1 1])); 
+        colormap gray; axis image; axis on; hold on; truesize
+        title('Remove Unwanted Pixels - Drag and circle unwanted pixels. Double click FAZ to finish.');
+        xlim([300 1500]);ylim([300 1500]);
+          finished = 'NO';
+    end
 end
 
 
